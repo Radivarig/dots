@@ -17,18 +17,31 @@ var DotsViewer = React.createClass({
         fill: 'blue',
       })
 
-    var lines = []
-    for (var i = 0; i < 20; ++i) {
-      var randX1 = circles[randomInt(0, circles.length -1)]
-      var randX2 = circles[randomInt(0, circles.length -1)]
-      lines.push({
-        x1: randX1.cx, y1:randX1.cy,
-        x2: randX2.cx, y2:randX2.cy,
-        strokeWidth:'1',
-        stroke:'green',
-      })
-    }
-    return {circles, lines}
+    return {circles, lines: []}
+  },
+
+  componentDidMount() {
+    window.addEventListener('mousemove', this.updateLines)
+  },
+
+  componentWillUnmount() {
+    window.removeEventListener('mousemove', this.updateLines)
+  },
+
+  updateLines(e) {
+    var lines = this.state.circles.map((c)=>{
+      var a = c.cx -e.pageX
+      var b = c.cy -e.pageY
+      var distanceAB = Math.sqrt(a*a +b*b)
+      if (distanceAB < 40)
+      return {
+        x1: c.cx, y1: c.cy,
+        x2: e.pageX, y2: e.pageY,
+        strokeWidth: '1',
+        stroke: 'green',
+      }
+    })
+    this.setState({lines})
   },
 
   render() {
